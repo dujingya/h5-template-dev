@@ -13,7 +13,10 @@ import IScroll from 'iscroll/build/iscroll-probe.js'
 import { LoadingPlugin, AlertPlugin, ToastPlugin } from 'vux'
 import vueScroller from 'vue-scroller'
 import share from './services/share.js' // 封装的分享组件
+import Vant from 'vant'
+import 'vant/lib/index.css'
 
+Vue.use(Vant)
 //  滚动插件
 Vue.use(LoadingPlugin)
 Vue.use(AlertPlugin)
