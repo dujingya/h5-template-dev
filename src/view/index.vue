@@ -1,41 +1,37 @@
 <!-- 中医问卷题目 -->
 <template>
   <div class="container">
-    <van-field
-      readonly
-      clickable
-      :value="value"
-      @touchstart.native.stop="show = true"
-    />
+    <van-swipe-cell>
+      <template slot="left">
+        <van-button square type="primary" text="选择" />
+      </template>
 
-    <van-number-keyboard
-      v-model="value"
-      :show="show"
-      theme="custom"
-      extra-key="."
-      close-button-text="完成"
-      @blur="show = false"
-      @input="onInput"
-      @delete="onDelete"
-    />
+      <van-cell :border="false" title="单元格" value="内容" />
+
+      <template slot="right">
+        <van-button square type="danger" text="删除" />
+        <van-button square type="primary" text="收藏"/>
+      </template>
+    </van-swipe-cell>
   </div>
 </template>
 <script>
-  import store from 'store'
-  import {http} from '../services/axios'
-  import * as API from '../services/url'
-  import { IsWX, wxLogin } from '../services/utils'
-  import { NumberKeyboard } from 'vant'
+  // import store from 'store'
+  // import {http} from '../services/axios'
+  // import * as API from '../services/url'
+  // import { IsWX, wxLogin } from '../services/utils'
+  import { SwipeCell, Toast } from 'vant'
 
   export default {
     data () {
       return {
-        show: true,
-        value: ''
+        count: 0,
+        isLoading: false
       }
     },
     components: {
-      NumberKeyboard
+      SwipeCell,
+      Toast
     },
     created () {
     },
@@ -43,18 +39,12 @@
       this.init()
     },
     methods: {
-      onInput (value) {
-        console.log(value)
-      },
-      onDelete () {
-        console.log('删除')
-      },
       init () {
-        this.isWX = IsWX() // 是否是在微信里打开
-        if (this.isWX && !this.userId) {
-          this.userId = store.get('userId') || ''
-          wxLogin(API, http, this, store)
-        }
+        // this.isWX = IsWX() // 是否是在微信里打开
+        // if (this.isWX && !this.userId) {
+        //   this.userId = store.get('userId') || ''
+        //   wxLogin(API, http, this, store)
+        // }
       }
     }
   }

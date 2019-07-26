@@ -15,7 +15,7 @@ import vueScroller from 'vue-scroller'
 import share from './services/share.js' // 封装的分享组件
 import Vant from 'vant'
 import 'vant/lib/index.css'
-
+// vant 移动端超好用的UI组件 文档（https://youzan.github.io/vant/#/zh-CN/intro）
 Vue.use(Vant)
 //  滚动插件
 Vue.use(LoadingPlugin)

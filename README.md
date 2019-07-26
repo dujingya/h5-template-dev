@@ -6,6 +6,8 @@
 本web app项目的多终端适配方案，采用的是rem布局方案，具体使用的js类库为手淘团队分享的[lib-flexible](https://www.npmjs.com/package/lib-flexible),具体使用请参照：[使用Flexible实现手淘H5页面的终端适配](http://www.w3cplus.com/mobile/lib-flexible-for-html5-layout.html)。
 ## postcss-px2rem
 在webpack打包项目时，将css代码中的px单位转化为rem单位，具体配置详见代码。
+## Vant 
+[vant](https://youzan.github.io/vant/#/zh-CN/intro) 提供了一套默认主题，CSS 命名采用 BEM 的风格，方便使用者覆盖样式。如果你想完全替换主题色或者其他样式，可以使用下面提供的方法
 ## mint-ui
 [mint-ui](https://mint-ui.github.io/#!/en)是饿了么前端团队基于vue开发的移动端框架。在本项目中，按需使用了其Toast组件（注：由于mint-ui不支持rem，所以在项目中移除了其默认的css文件，并根据ui提供的设计稿在外部重写了Toast的样式），如果你也想在采用rem布局的app中使用mint-ui, 也建议你按需引入组件并重写样式，让集成的postcss-px2rem实现px和rem的转化,不建议使用[mint-ui-rem-dpr](https://www.npmjs.com/package/mint-ui-rem-dpr)提供的让mint-ui支持rem的方案(原因是：1. 我们在实际开发中，一般都会使用自己的组件样式；2. 本人在使用该依赖时，打包会出错)。
 ## vue-iscroll-view
