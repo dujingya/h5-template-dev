@@ -1,4 +1,5 @@
 import wx from 'weixin-js-sdk'
+import store from 'store'
 export default {
   install (Vue, opt) {
     Vue.prototype.share = function (data) {
@@ -12,7 +13,7 @@ export default {
         data.desc = '以“上医治未病”为理念，基于人工智能的智能健康分析及干预系统'
       }
       wx.ready(function () {
-        let url = data.url || window.location.href
+        let url = data.url || store.get('indexUrl') || window.location.href
         url = url.split('#')
         let url1 = url[1]
         let url0 = url[0]
@@ -39,6 +40,18 @@ export default {
           }
         })
       })
+    }
+    Vue.prototype.scrollYPosition = function (position) {
+      let scrollPosition = 0
+      if (position) {
+        scrollPosition = position
+      }
+      setTimeout(() => {
+        //  console.log('scrollPosition', scrollPosition)
+        document.body.scrollTop = scrollPosition
+        // 兼容google chrome
+        document.documentElement.scrollTop = scrollPosition
+      }, 5)
     }
   }
 }

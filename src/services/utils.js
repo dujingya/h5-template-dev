@@ -1,8 +1,9 @@
 import shal from 'sha1'
 import { Base64 } from 'js-base64'
 import qs from 'qs'
-
-export const doSignToken = (url, appKey, secret, data) => {
+import { Toast, Notify } from 'vant'
+// 1 接口请求添加签名加密
+export const doSignToken = (url, appKey, appSecret, data) => {
     // 如果是GET 请求需要把参数也要拼到url后面
   if (data) {
     url = `${url}?${qs.stringify(data)}`
@@ -10,23 +11,11 @@ export const doSignToken = (url, appKey, secret, data) => {
   let date = new Date()
   let timestamp = date.getTime()
   let appkeyStr = appKey || ''
-  let secretStr = secret || '' // 获取secret
-  let sing = url + secretStr + timestamp
+  let appSecretStr = appSecret || '' // 获取appSecret
+  let sing = url + appSecretStr + timestamp
   let shalStr = shal(sing)
   let tokenStr = Base64.encode(`${appkeyStr}:${timestamp}:${shalStr}`)
   return `Bearer ${tokenStr}`
-}
-// 把时间戳，appKey, appSecrect, 参数， 请求地址拼接成字符串
-export const doSignSha1 = (url, data = {}, timestamp, appKey, appSecrect) => {
-  let appkeyStr = appKey || 'xokjhyuapq'
-  let appScretStr = appSecrect || 'a0017da4e33cb6fca2d855aa1e28c7f9'
-  let tempArray = [appkeyStr, appScretStr, timestamp, JSON.stringify(data), url]
-  let sortResult = tempArray.sort()
-  let tmpString = ''
-  for (let i = 0; i < sortResult.length; i++) {
-    tmpString += sortResult[i]
-  }
-  return shal(tmpString)
 }
 
 // 3.判断当前运行环境是不是微信
@@ -36,10 +25,17 @@ export const IsWX = () => {
 
 // 4.获取参数
 export const getUrlParam = (name) => {
-  let reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)')
-  let r = window.location.search.substr(1).match(reg)
-  if (r !== null) return unescape(r[2])
-  return null
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
+  var regRewrite = new RegExp('(^|/)' + name + '/([^/]*)(/|$)', 'i')
+  var r = window.location.search.substr(1).match(reg)
+  var q = window.location.pathname.substr(1).match(regRewrite)
+  if (r != null) {
+    return unescape(r[2])
+  } else if (q != null) {
+    return unescape(q[2])
+  } else {
+    return null
+  }
 }
 // 5.微信登录，后端调用微信API登录后，直接调用后端接口就行
 export const wxLogin = (API, http, _this, store, cb) => {
@@ -54,13 +50,10 @@ export const wxLogin = (API, http, _this, store, cb) => {
     let encodUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx4a92fdf84e241fcf&redirect_uri=' + encodeURIComponent(resUrl) + '&response_type=code&scope=snsapi_userinfo&state=STATE&connect_redirect=1 #wechat_redirect'
     window.location.replace(encodUrl)
   } else if (!code) {
-    if (_this.loading) {
-      return
-    }
-    _this.loading = true
-    _this.$vux.loading.show({
-      text: ''
-    })
+    // if (_this.isLoading) {
+    //   return
+    // }
+    _this.isLoading = true
     sessionStorage.setItem('code', paramsCode)
     let params = JSON.stringify({
       logincode: paramsCode,
@@ -76,29 +69,24 @@ export const wxLogin = (API, http, _this, store, cb) => {
       if (res.data.c === 2000) {
         let resData = res.data.d
         _this.userId = resData.userId
+        console.log(_this.userId, 11111111999999999)
         store.set('userInfo', resData)
         store.set('userId', resData.userId)
         store.set('userToken', resData.UserToken)
         store.set('avatarUrl', resData.avatarUrl)
         store.set('nickName', resData.nickName)
-        let url = window.location.href.split('#')
-        let url0 = url[0]
-        url0 = url0.split('?')[0]
-        store.set('fetchServiceUrl', url0)
+        let url = `${window.location.host}${window.location.pathname}`
+        store.set('fetchServiceUrl', url)
         if (cb && typeof cb === 'function') {
           cb()
         }
       } else {
-        _this.$vux.toast.text(res.data.m)
         sessionStorage.removeItem('code')
       }
-      _this.$vux.loading.hide()
-      _this.loading = false
+      _this.isLoading = false
     }, (ex) => {
-      _this.$vux.loading.hide()
-      _this.loading = false
+      _this.isLoading = false
       sessionStorage.removeItem('code')
-      _this.$vux.toast.text('登录失败')
     })
   }
 }
@@ -169,3 +157,45 @@ export const configWX = (axios, wx) => {
     console.log('err--getAuth', err)
   })
 }
+// 10 错误提示
+export const toastMsg = (res, _this) => {
+  if (res && res.data && res.data.message) {
+    Toast(res.data.message)
+  } else {
+    if (res && res.status && res.status === 403) {
+      let errMsg = res.data.split('-[gateway')
+      if (errMsg) {
+        Toast(errMsg[0] + '暂无权限访问！')
+      } else {
+        Toast('40002,暂无权限访问!')
+      }
+    } else {
+      Toast('数据异常，请求失败!')
+    }
+  }
+  _this.loadError = false
+}
+export const notifyMsg = () => {
+  Notify({type: 'success', message: '保存成功', duration: 1000, background: '#51B79C'})
+}
+// 状态码的错误集合
+// RequestNoAppkey        = 40001 // 请求缺失 appkey
+// RequestInvalidAppkey   = 40002 // 请求 appkey 无效
+// ServerStoped           = 40003 // 服务已停止
+// NoMatchApi             = 40004 // 未找到匹配的接口
+// NoServer               = 40005 // 未找到接口配置的服务
+// RewriteNotMatch        = 40006 // 接口 URL 重写不匹配
+// AuthSignMiss           = 40007 // 未找到签名信息
+// AuthParseSignErr       = 40008 // 签名信息解析失败
+// AuthSignTimeout        = 40009 // 签名信息失效
+// AuthSignAppkeyNotMatch = 40010 // 签名 appkey 与请求头 appkey 不匹配
+// AuthSignAppkeyInvalid  = 40011 // 签名 appkey 无效
+// AuthSignInvalid        = 40012 // 签名信息无效
+// UpstreamServerErr      = 40013 // 请求上游服务器错误
+// TargetIPInBL           = 40014 // 请求 IP 命中黑名单
+// CircuitClose           = 40015 // 熔断器：资源处于封闭状态
+// CircuitHalfLimited     = 40016 // 熔断器：资源是电路的一半，流量限制
+// QPSLimited             = 40017 // 最大 QPS 限制
+// AppQPSLimited          = 40018 // App 最大 QPS 限制
+// ValidationFailure      = 40019 // 验证失败
+// TargetIPNoInWL         = 40020 // 请求 IP 不在白名单中
