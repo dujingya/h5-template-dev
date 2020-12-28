@@ -1,45 +1,32 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </div>
+    <router-view/>
   </div>
 </template>
 
-<script>
-// import VConsole from 'vconsole/dist/vconsole.min.js'
-import wx from 'weixin-js-sdk'
-import axios from 'axios'
-import { configWX } from './services/utils'
-export default {
-  name: 'app',
-  methods: {
-  },
-  mounted () {
-    configWX(axios, wx)
-  }
-}
-</script>
-
 <style lang="scss">
-@import "./assets/css/common.scss";
-  body{
-    background: #F3F7F7;
-  }
-  html, body, #app{
-    height: 100%;
-  }
-html,body{
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  -webkit-overflow-scrolling: auto;
-}
-* {
-  moz-user-select: -moz-none;
-  -moz-user-select: none;
-  -o-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
 }
 
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
 </style>

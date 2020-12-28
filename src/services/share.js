@@ -2,18 +2,20 @@ import wx from 'weixin-js-sdk'
 import store from 'store'
 export default {
   install (Vue, opt) {
+    console.log(opt)
     Vue.prototype.share = function (data) {
       if (!data.imgUrl) {
-        data.imgUrl = 'https://lk-upload-api-pro.op.laikang.com/common/fileDownload/qixiu-onlinecourse/a55f28a1-e855-476c-a6e0-81caf943f403.jpg'
+        data.imgUrl = 'https://lk-upload-pro.oss-cn-beijing.aliyuncs.com/b12e9d71-4908-4118-a7ec-76243eca70ca.jpg'
       }
       if (!data.title) {
-        data.title = '来康大脑'
+        data.title = '智能评估'
       }
       if (!data.desc) {
-        data.desc = '以“上医治未病”为理念，基于人工智能的智能健康分析及干预系统'
+        data.desc = '简单高效！一次测评，多种慢性病风险全掌握！'
       }
       wx.ready(function () {
         let url = data.url || store.get('indexUrl') || window.location.href
+        // console.log(url, 90000000000)
         url = url.split('#')
         let url1 = url[1]
         let url0 = url[0]

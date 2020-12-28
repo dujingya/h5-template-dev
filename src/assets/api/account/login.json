@@ -1,7 +1,0 @@
-{
-  status: 0,
-  msg: 'login success',
-  data: {
-    access_token: 'ssdsdsdsdsdss'
-  }
-}

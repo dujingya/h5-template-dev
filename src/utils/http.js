@@ -15,20 +15,18 @@ axios.interceptors.response.use(response => {
 })
 
 const http = (options, callback) => {
-  let method = options.method ? options.method.toUpperCase() : 'POST'
+  const method = options.method ? options.method.toUpperCase() : 'POST'
   console.log('appKey', store.get('appKey'))
-  let appKey = store.get('appKey') || 'fPEPQ6jig'
   let headers = {
-    'Content-Type': 'application/json;charset=UTF-8',
-    'appKey': appKey
+    'Content-Type': 'application/json;charset=UTF-8'
   }
-  options.params = options.params || {}
+  options.params = options.params || ''
   if (options.type && options.type.toUpperCase() === 'FORMDATA') {
     // 处理请求头
     headers['Content-Type'] = 'multipart/form-data'
     // 处理请求数据
-    let formData = new FormData()
-    for (let key in options.params) {
+    const formData = new FormData()
+    for (const key in options.params) {
       formData.append(key, options.params[key])
     }
     options.params = formData
@@ -48,7 +46,7 @@ const http = (options, callback) => {
     transformRequest: [function (data) {
       if (options.type && options.type.toUpperCase() === 'FILE') {
         console.log('是FILE')
-        let submitData = qs.stringify(data)
+        const submitData = qs.stringify(data)
         return submitData
       } else {
         return data

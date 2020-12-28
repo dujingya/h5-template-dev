@@ -65,6 +65,7 @@ a img {
 }
 *{
     -webkit-box-sizing: border-box;
+    /*touch-action: none;*/
 }
 textarea{
     resize: none;
